@@ -1,0 +1,7 @@
+dnsomatic_username: nmotter 
+dnsomatic_password: phil31011 
+hostnames:
+  - all.dnsomatic.com
+wildcard: NOCHG
+mx: NOCHG
+backmx: NOCHG
