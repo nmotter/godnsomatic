@@ -30,6 +30,7 @@ func main() {
 	loadConfig(config)
 	fmt.Println(config.Hostnames[0])
 
+	// Check for ip change
 	if change, ip := detectIpChange(); change == true {
 		fmt.Println("The IP Changed", ip)
 		updateDNS(config, ip)
@@ -91,7 +92,12 @@ func detectIpChange() (bool, string) {
 		}
 
 		// Compare myIp with storedIp and detect change
+		// Update lastIp.txt
 		if string(myIp) != string(storedIp) {
+			_, err := ioutil.WriteFile(LASTIP_TXT, myIp, 0644)
+			if err != err {
+				panic(err)
+			}
 			change = true
 		}
 

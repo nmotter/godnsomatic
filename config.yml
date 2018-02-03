@@ -1,5 +1,5 @@
-dnsomatic_username: nmotter 
-dnsomatic_password: phil31011 
+dnsomatic_username: xxxxxxxx 
+dnsomatic_password: xxxxxxxx 
 hostnames:
   - all.dnsomatic.com
 wildcard: NOCHG
