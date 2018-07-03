@@ -2,16 +2,26 @@ package main
 
 import (
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
-	"gopkg.in/yaml.v2"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
 const (
-	DNS_O_MATIC_MYIP_URL = "http://myip.dnsomatic.com"
-	LASTIP_TXT           = "lastIp.txt"
+	dnsOMaticMyipURL = "http://myip.dnsomatic.com"
+	lastIPTxt        = "lastIp.txt"
+)
+
+var (
+	key = "xixidkekdndlskdkekdnskdlfkdindkd"
 )
 
 type Config struct {
@@ -28,14 +38,17 @@ func main() {
 
 	// Load configuration file
 	loadConfig(config)
-	fmt.Println(config.Hostnames[0])
+
+	fmt.Println(config)
+
+	os.Exit(0)
 
 	// Check for ip change
 	if change, ip := detectIpChange(); change == true {
-		fmt.Println("The IP Changed", ip)
+		fmt.Println("The IP Changed:", ip)
 		updateDNS(config, ip)
 	} else {
-		fmt.Println("No IP Change", ip)
+		fmt.Println("No IP Change:", ip)
 	}
 }
 
@@ -61,7 +74,8 @@ func detectIpChange() (bool, string) {
 	change := false
 
 	// Call DNS-O-Matic my ip service
-	resp, err := http.Get(DNS_O_MATIC_MYIP_URL)
+
+	resp, err := http.Get(dnsOMaticMyipURL)
 	if err != nil {
 		panic(err)
 	}
@@ -74,11 +88,11 @@ func detectIpChange() (bool, string) {
 
 	defer resp.Body.Close()
 
-	fmt.Println(string(myIp))
+	//fmt.Println(string(myIp))
 
 	// Create last IP file if it does not exist
-	if _, err := os.Stat(LASTIP_TXT); os.IsNotExist(err) {
-		err := ioutil.WriteFile(LASTIP_TXT, myIp, 0644)
+	if _, err := os.Stat(lastIPTxt); os.IsNotExist(err) {
+		err := ioutil.WriteFile(lastIPTxt, myIp, 0644)
 		if err != nil {
 			panic(err)
 		}
@@ -86,7 +100,7 @@ func detectIpChange() (bool, string) {
 	} else {
 
 		// Load the last ip
-		storedIp, err := ioutil.ReadFile(LASTIP_TXT)
+		storedIp, err := ioutil.ReadFile(lastIPTxt)
 		if err != nil {
 			panic(err)
 		}
@@ -94,7 +108,7 @@ func detectIpChange() (bool, string) {
 		// Compare myIp with storedIp and detect change
 		// Update lastIp.txt
 		if string(myIp) != string(storedIp) {
-			_, err := ioutil.WriteFile(LASTIP_TXT, myIp, 0644)
+			err := ioutil.WriteFile(lastIPTxt, myIp, 0644)
 			if err != err {
 				panic(err)
 			}
@@ -113,8 +127,10 @@ func updateDNS(config *Config, myIp string) {
 	// Example url: https://updates.dnsomatic.com/nic/update?hostname=yourhostname&myip=ipaddress&wildcard=NOCHG&mx=NOCHG&backmx=NOCHG
 	buffer := bytes.NewBuffer(nil)
 	buffer.WriteString("https://updates.dnsomatic.com/nic/update")
-	buffer.WriteString("?hostname=" + config.Hostnames[0])
-	buffer.WriteString("&myip=" + myIp)
+	buffer.WriteString("?myip=" + myIp)
+	for idx := range config.Hostnames {
+		buffer.WriteString("&hostname=" + config.Hostnames[idx])
+	}
 	buffer.WriteString("&wildcard=" + config.Wildcard)
 	buffer.WriteString("&mx=" + config.Mx)
 	buffer.WriteString("&backmx=" + config.Backmx)
@@ -124,13 +140,63 @@ func updateDNS(config *Config, myIp string) {
 	req.SetBasicAuth(config.DnsomaticUsername, config.DnsomaticPassword)
 	req.Header.Set("User-Agent", "GoDNS-O-Matic/1.0")
 
-	fmt.Println("Request: ", req)
+	fmt.Println("Request:", req)
 
 	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
 	}
 	bodyText, err := ioutil.ReadAll(resp.Body)
-	s := string(bodyText)
-	fmt.Println(s)
+	fmt.Println("Updated lastIp:", string(bodyText))
+}
+
+// encrypt string to base64 crypto using AES
+func encrypt(key []byte, text string) string {
+	// key := []byte(keyText)
+	plaintext := []byte(text)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	// The IV needs to be unique, but not secure. Therefore it's common to
+	// include it at the beginning of the ciphertext.
+	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
+	iv := ciphertext[:aes.BlockSize]
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		panic(err)
+	}
+
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
+
+	// convert to base64
+	return base64.URLEncoding.EncodeToString(ciphertext)
+}
+
+// decrypt from base64 to decrypted string
+func decrypt(key []byte, cryptoText string) string {
+
+	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	// The IV needs to be unique, but not secure. Therefore it's common to
+	// include it at the beginning of the ciphertext.
+	if len(ciphertext) < aes.BlockSize {
+		panic("ciphertext too short")
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+
+	// XORKeyStream can work in-place if the two arguments are the same.
+	stream.XORKeyStream(ciphertext, ciphertext)
+
+	return fmt.Sprintf("%s", ciphertext)
 }

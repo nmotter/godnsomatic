@@ -1,5 +1,5 @@
 dnsomatic_username: xxxxxxxx 
-dnsomatic_password: xxxxxxxx 
+dnsomatic_password: test001 
 hostnames:
   - all.dnsomatic.com
 wildcard: NOCHG
