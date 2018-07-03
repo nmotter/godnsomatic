@@ -1,0 +1,10 @@
+{
+    "DnsomaticUsername": "testUser",
+    "DnsomaticPassword": "dnsPassword",
+    "Hostname": [
+        "hostname"
+    ],
+    "Wildcard": "dnsWildCard",
+    "Mx": "mx",
+    "Backmx": "backmx"
+}
