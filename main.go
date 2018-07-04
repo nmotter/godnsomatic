@@ -33,7 +33,7 @@ func loadConfig(config *Config) {
 		config := Config{
 			DnsomaticUsername: "dnsUsername",
 			DnsomaticPassword: "dnsPassword",
-			Hostname:          []string{"hostname"},
+			Hostname:          []string{"all.dnsomatic.com"},
 			Wildcard:          "dnsWildCard",
 			Mx:                "mx",
 			Backmx:            "backmx",
