@@ -1,10 +1,11 @@
 {
-    "DnsomaticUsername": "testUser",
-    "DnsomaticPassword": "dnsPassword",
+    "DnsomaticUsername": "nmotter",
+    "DnsomaticPassword": "5Kh08CulhDB$M1%71SeITf3P7lJyQD91Q",
     "Hostname": [
-        "hostname"
+        "all.dnsomatic.com"
     ],
-    "Wildcard": "dnsWildCard",
-    "Mx": "mx",
-    "Backmx": "backmx"
+    "Wildcard": "NOCHG",
+    "Mx": "NOCHG",
+    "Backmx": "NOCHG",
+    "DnsomaticUrl": "http://myip.dnsomatic.com"
 }
