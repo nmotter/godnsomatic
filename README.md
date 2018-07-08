@@ -50,4 +50,8 @@ Specifies a Mail eXchanger for use with the hostname being modified. The specifi
 
 Requests the MX in the previous parameter to be set up as a backup MX by listing the host itself as an MX with a lower preference value. YES activates preferred MX record pointed to hostname itself, NOCHG keeps the previous value, any other value is considered as NO and deactivates the corresponding DNS record.
 
+For additional information please see the following DNS-O-Matic documentation: <https://www.dnsomatic.com/wiki/api>
+
 ### Scheduling Recommendations
+
+Schedule calls to the service at least 30 minutes apart, so to not over use the service.  Once a day is probably more than enough.
