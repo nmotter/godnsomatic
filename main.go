@@ -10,9 +10,11 @@ import (
 )
 
 const (
-	lastIPTxt = "lastIp.txt"
+	lastIPTxt    = "lastIp.txt"
+	dnsomaticURL = "http://myip.dnsomatic.com"
 )
 
+// Config - Handles application configuration
 type Config struct {
 	DnsomaticUsername string
 	DnsomaticPassword string
@@ -20,7 +22,6 @@ type Config struct {
 	Wildcard          string
 	Mx                string
 	Backmx            string
-	DnsomaticUrl      string
 }
 
 var (
@@ -56,7 +57,6 @@ func loadConfig(config *Config) {
 			Wildcard:          "NOCHG",
 			Mx:                "NOCHG",
 			Backmx:            "NOCHG",
-			DnsomaticUrl:      "http://myip.dnsomatic.com",
 		}
 
 		jsonString, err := json.MarshalIndent(config, "", "    ")
@@ -66,7 +66,7 @@ func loadConfig(config *Config) {
 			os.Exit(1)
 		}
 
-		err = ioutil.WriteFile("config.json", jsonString, 0777)
+		err = ioutil.WriteFile("config.json", jsonString, 0755)
 		if err == nil {
 			fmt.Println("Missing configuration file.  Creating config.json for you now.")
 			fmt.Println("Please update the configuration file and run the program again.")
@@ -95,7 +95,7 @@ func discoverIpChange() (bool, string) {
 	change := false
 
 	// Call DNS-O-Matic my ip service
-	resp, err := http.Get(config.DnsomaticUrl)
+	resp, err := http.Get(dnsomaticURL)
 	if err != nil {
 		panic(err)
 	}

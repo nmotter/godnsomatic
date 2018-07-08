@@ -1,7 +1,0 @@
-dnsomatic_username: xxxxxxxx 
-dnsomatic_password: test001 
-hostnames:
-  - all.dnsomatic.com
-wildcard: NOCHG
-mx: NOCHG
-backmx: NOCHG
