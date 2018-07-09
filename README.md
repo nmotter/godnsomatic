@@ -1,6 +1,6 @@
 # godnsomatic
 
-DNS-O-Matic client written in the Go programming language.  This client is follows the 0.9 version of the DNS-OMatic API specifiction.
+DNS-O-Matic client written in the Go programming language.  The client follows the 0.9 version of the DNS-O-Matic API specifiction.
 
 ## Getting Started
 
@@ -54,4 +54,4 @@ For additional information please see the following DNS-O-Matic documentation: <
 
 ### Scheduling Recommendations
 
-Schedule calls to the service at least 30 minutes apart, so to not over use the service.  Once a day is probably more than enough.
+Schedule calls to the DNS-O-Matic at least 30 minutes apart, so to not over use the service.  Once a day is probably more than enough.
