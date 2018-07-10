@@ -16,12 +16,12 @@ const (
 
 // Config - Handles application configuration
 type Config struct {
-	DnsomaticUsername string
-	DnsomaticPassword string
-	Hostname          []string
-	Wildcard          string
-	Mx                string
-	Backmx            string
+	DnsomaticUsername string   `json:"dnsomatic_username"`
+	DnsomaticPassword string   `json:"dnsomatic_password"`
+	Hostname          []string `json:"hostnames"`
+	Wildcard          string   `json:"wildcard"`
+	Mx                string   `json:"mx"`
+	Backmx            string   `json:"back_mx"`
 }
 
 var (

@@ -34,10 +34,6 @@ After the initial run the config.json file is created.  See the example config.j
 
 Hostname you wish to update. To update all services registered with DNS-O-Matic to the new IP address, hostname may be omitted or set to all.dnsomatic.com (useful if required by client). This field is also used for services that use different names for the unique identifier of the target being updated (ex. freedns.afraid.org, TZO). DNS-O-Matic will format the update string appropriately for each supported service at distribution.
 
-#### myip
-
-IP address to set for the update. If not specified, the best IP address the server can determine will be used (some proxy configurations pass the IP in a header, and that is detected by the server).
-
 #### wildcard
 
 Parameter enables or disables wildcards for this host. ON enables wildcard. NOCHG value will keep current wildcard settings. Any other value will disable wildcard for hosts in update. What does wildcard do & mean in this context?
